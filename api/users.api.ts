@@ -16,4 +16,21 @@ export class UsersApi {
             data: user
         });
     }
+
+    async getUserById(userId: string): Promise<APIResponse> {
+        return await this.api.get(`/usuarios/${userId}`);
+    }
+
+    async updateUser(
+        userId: string,
+        user: User
+    ): Promise<APIResponse> {
+        return await this.api.put(`/usuarios/${userId}`, {
+            data: user
+        });
+    }
+
+    async deleteUser(userId: string): Promise<APIResponse> {
+        return await this.api.delete(`/usuarios/${userId}`);
+    }
 }
