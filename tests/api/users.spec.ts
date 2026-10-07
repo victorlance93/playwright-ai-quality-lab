@@ -19,41 +19,29 @@ test.describe('Users API', () => {
         expect(responseBody._id).toBeTruthy();
     });
 
-    test('should get a user by id', async ({ usersApi }) => {
+    test('should get a user by id', async ({ usersApi, testUser }) => {
 
-        const user = createUserData();
+        const response =
+            await usersApi.getUserById(testUser.userId);
 
-        const createResponse = await usersApi.createUser(user);
+        expect(response.status()).toBe(200);
 
-        expect(createResponse.status()).toBe(201);
+        const responseBody = await response.json();
 
-        const createBody = await createResponse.json();
+        expect(responseBody.nome)
+            .toBe(testUser.user.nome);
 
-        const userId = createBody._id;
+        expect(responseBody.email)
+            .toBe(testUser.user.email);
 
-        const getResponse = await usersApi.getUserById(userId);
+        expect(responseBody.password)
+            .toBe(testUser.user.password);
 
-        expect(getResponse.status()).toBe(200);
-
-        const getBody = await getResponse.json();
-
-        expect(getBody.nome).toBe(user.nome);
-        expect(getBody.email).toBe(user.email);
-        expect(getBody.password).toBe(user.password);
-        expect(getBody.administrador).toBe(user.administrador);
-    });
-
-    test('should update an existing user', async ({ usersApi }) => {
-
-        const user = createUserData();
-
-        const createResponse = await usersApi.createUser(user);
-
-        expect(createResponse.status()).toBe(201);
-
-        const createBody = await createResponse.json();
-
-        const userId = createBody._id;
+        expect(responseBody.administrador)
+            .toBe(testUser.user.administrador);
+    }
+    );
+    test('should update an existing user', async ({ usersApi, testUser }) => {
 
         const updatedUser = createUserData({
             nome: 'Playwright Updated User',
@@ -61,13 +49,15 @@ test.describe('Users API', () => {
         });
 
         const updateResponse = await usersApi.updateUser(
-            userId,
+            testUser.userId,
             updatedUser
         );
 
         expect(updateResponse.status()).toBe(200);
 
-        const getResponse = await usersApi.getUserById(userId);
+        const getResponse = await usersApi.getUserById(
+            testUser.userId
+        );
 
         expect(getResponse.status()).toBe(200);
 
@@ -76,22 +66,16 @@ test.describe('Users API', () => {
         expect(getBody.nome).toBe(updatedUser.nome);
         expect(getBody.email).toBe(updatedUser.email);
         expect(getBody.password).toBe(updatedUser.password);
-        expect(getBody.administrador).toBe(updatedUser.administrador);
-    });
+        expect(getBody.administrador)
+            .toBe(updatedUser.administrador);
+    }
+    );
 
-    test('should delete an existing user', async ({ usersApi }) => {
+    test('should delete an existing user', async ({ usersApi, testUser }) => {
 
-        const user = createUserData();
-
-        const createResponse = await usersApi.createUser(user);
-
-        expect(createResponse.status()).toBe(201);
-
-        const createBody = await createResponse.json();
-
-        const userId = createBody._id;
-
-        const deleteResponse = await usersApi.deleteUser(userId);
+        const deleteResponse = await usersApi.deleteUser(
+            testUser.userId
+        );
 
         expect(deleteResponse.status()).toBe(200);
 
@@ -100,9 +84,12 @@ test.describe('Users API', () => {
         expect(deleteBody.message)
             .toBe('Registro excluído com sucesso');
 
-        const getResponse = await usersApi.getUserById(userId);
+        const getResponse = await usersApi.getUserById(
+            testUser.userId
+        );
 
         expect(getResponse.status()).toBe(400);
-    });
+    }
+    );
 
 });
