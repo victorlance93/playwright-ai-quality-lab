@@ -9,6 +9,8 @@ import { environment } from '../config/environment';
 import { UsersApi } from '../api/users.api';
 import { User } from '../types/user';
 import { createUserData } from '../data/user.factory';
+import { LoginPage } from '../pages/login.page';
+import { HomePage } from '../pages/home.page';
 
 type TestUser = {
     user: User;
@@ -19,6 +21,8 @@ type TestFixtures = {
     api: APIRequestContext;
     usersApi: UsersApi;
     testUser: TestUser;
+    loginPage: LoginPage;
+    homePage: HomePage;
 };
 
 export const test = base.extend<TestFixtures>({
@@ -40,7 +44,6 @@ export const test = base.extend<TestFixtures>({
     },
 
     testUser: async ({ usersApi }, use) => {
-
         const user = createUserData();
 
         const response = await usersApi.createUser(user);
@@ -52,7 +55,6 @@ export const test = base.extend<TestFixtures>({
         }
 
         const responseBody = await response.json();
-
         const userId = responseBody._id;
 
         await use({
@@ -65,6 +67,18 @@ export const test = base.extend<TestFixtures>({
         } catch {
             // Cleanup should not hide the original test result
         }
+    },
+
+    loginPage: async ({ page }, use) => {
+        const loginPage = new LoginPage(page);
+
+        await use(loginPage);
+    },
+
+    homePage: async ({ page }, use) => {
+        const homePage = new HomePage(page);
+
+        await use(homePage);
     },
 
 });

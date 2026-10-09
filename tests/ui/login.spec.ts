@@ -1,53 +1,46 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/test.fixture';
 
 test.describe('Login', () => {
 
-    test.beforeEach(async ({ page }) => {
-        await page.goto('/login');
+    test.beforeEach(async ({ loginPage }) => {
+        await loginPage.goto();
     });
 
-    test('should display the login page', async ({ page }) => {
-        const emailInput = page.getByTestId('email');
-        const passwordInput = page.getByTestId('senha');
-        const loginButton = page.getByTestId('entrar');
+    test('should display the login page', async ({ loginPage }) => {
 
-        await expect(emailInput).toBeVisible();
-        await expect(passwordInput).toBeVisible();
-        await expect(loginButton).toBeVisible();
-    });
+        await expect(loginPage.emailInput).toBeVisible();
+        await expect(loginPage.passwordInput).toBeVisible();
+        await expect(loginPage.loginButton).toBeVisible();
+    }
+    );
 
-    test('should display validation when submitting empty credentials', async ({ page }) => {
-        const loginButton = page.getByTestId('entrar');
+    test('should display validation when submitting empty credentials', async ({ loginPage }) => {
 
-        await loginButton.click();
+        await loginPage.loginButton.click();
 
-        await expect(page.getByText('Email é obrigatório')).toBeVisible();
-        await expect(page.getByText('Password é obrigatório')).toBeVisible();
-    });
+        await expect(
+            loginPage.emailRequiredMessage
+        ).toBeVisible();
 
-    test('should login successfully with a user created by API', async ({ page, request }) => {
+        await expect(
+            loginPage.passwordRequiredMessage
+        ).toBeVisible();
+    }
+    );
 
-        const user = {
-            nome: 'Playwright QA',
-            email: `playwright.qa.${Date.now()}@teste.com`,
-            password: 'teste123',
-            administrador: 'true'
-        };
+    test('should login successfully with a user created by API', async ({ page, loginPage, homePage, testUser }) => {
 
-        const response = await request.post(
-            'https://serverest.dev/usuarios',
-            {
-                data: user
-            }
+        await loginPage.login(
+            testUser.user.email,
+            testUser.user.password
         );
 
-        expect(response.status()).toBe(201);
-
-        await page.getByTestId('email').fill(user.email);
-        await page.getByTestId('senha').fill(user.password);
-        await page.getByTestId('entrar').click();
-
         await expect(page).toHaveURL(/home/);
-    });
+
+        await expect(
+            homePage.welcomeHeading
+        ).toBeVisible();
+    }
+    );
 
 });
