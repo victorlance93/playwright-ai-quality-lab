@@ -19,6 +19,12 @@
   },
   "homepage": "https://github.com/victorlance93/playwright-ai-quality-lab#readme",
   "devDependencies": {
-    "@playwright/test": "^1.63.0"
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "strip-ansi": "^7.2.0"
   }
 }
